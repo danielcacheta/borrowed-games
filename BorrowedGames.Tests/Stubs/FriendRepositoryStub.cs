@@ -2,12 +2,13 @@
 using BorrowedGames.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BorrowedGames.Tests.Stubs
 {
     public class FriendRepositoryStub : IFriendsRepository
     {
-        private List<Friend> _list;
+        private IList<Friend> _list;
         private long _lastId;
 
         public FriendRepositoryStub()
@@ -33,14 +34,14 @@ namespace BorrowedGames.Tests.Stubs
             _list = null;
         }
 
-        public Friend Find(long id)
+        public async Task<Friend> Find(long id)
         {
-            return _list.Find(x => x.Id == id);
+            return await Task.Run(() => _list.Where(x => x.Id == id).FirstOrDefault());
         }
 
-        public IEnumerable<Friend> FindAll()
+        public async Task<IEnumerable<Friend>> FindAll()
         {
-            return _list;
+            return await Task.Run(() => _list.AsEnumerable());
         }
 
         public bool IsDuplicate(Friend friend)
@@ -50,14 +51,14 @@ namespace BorrowedGames.Tests.Stubs
                 x.Name.Trim() == friend.Name.Trim());
         }
 
-        public void Save()
+        public Task Save()
         {
-
+            return Task.CompletedTask;
         }
 
         public void Update(Friend friend)
         {
-            Delete(Find(friend.Id));
+            Delete(Find(friend.Id).Result);
             Add(friend);
         }
     }

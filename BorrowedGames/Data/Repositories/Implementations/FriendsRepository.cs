@@ -33,14 +33,14 @@ namespace BorrowedGames.Data.Repositories.Implementations
             _dbContext.Friend.Remove(friend);
         }
 
-        public Friend Find(long id)
+        public async Task<Friend> Find(long id)
         {
-            return _dbContext.Friend.Find(id);
+            return await _dbContext.Friend.FindAsync(id);
         }
 
-        public IEnumerable<Friend> FindAll()
+        public async Task<IEnumerable<Friend>> FindAll()
         {
-            return _dbContext.Friend;
+            return await _dbContext.Friend.ToListAsync();
         }
 
         public bool IsDuplicate(Friend friend)
@@ -51,9 +51,9 @@ namespace BorrowedGames.Data.Repositories.Implementations
                 .Any();
         }
 
-        public void Save()
+        public Task Save()
         {
-            _dbContext.SaveChanges();
+            return _dbContext.SaveChangesAsync();
         }
 
         protected virtual void Dispose(bool disposing)

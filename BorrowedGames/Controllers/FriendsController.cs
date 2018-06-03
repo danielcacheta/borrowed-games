@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BorrowedGames.Models;
 using BorrowedGames.Data.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BorrowedGames.Controllers
 {
+    [Authorize]
     public class FriendsController : Controller
     {
         private readonly IFriendsRepository _repository;
@@ -18,14 +20,13 @@ namespace BorrowedGames.Controllers
         // GET: Friends
         public async Task<IActionResult> Index()
         {
-            var friends = _repository.FindAll();
-            return View(friends);
+            return View(await _repository.FindAll());
         }
 
         // GET: Friends/Details/5
         public async Task<IActionResult> Details(long id)
         {
-            var friend = _repository.Find(id);
+            var friend = await _repository.Find(id);
 
             if (friend == null)
                 return NotFound();
@@ -44,12 +45,12 @@ namespace BorrowedGames.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Phone")] Friend friend)
+        public async Task<IActionResult> Create([Bind("Id,Name,Phone")] Friend friend)
         {
             if (ModelState.IsValid)
             {
                 _repository.Add(friend);
-                _repository.Save();
+                await _repository.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(friend);
@@ -58,7 +59,7 @@ namespace BorrowedGames.Controllers
         // GET: Friends/Edit/5
         public async Task<IActionResult> Edit(long id)
         {
-            var friend = _repository.Find(id);
+            var friend = await _repository.Find(id);
             if (friend == null)
                 return NotFound();
 
@@ -70,7 +71,7 @@ namespace BorrowedGames.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Name,Phone")] Friend friend)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Phone")] Friend friend)
         {
             if (id != friend.Id)
                 return NotFound();
@@ -80,7 +81,7 @@ namespace BorrowedGames.Controllers
                 try
                 {
                     _repository.Update(friend);
-                    _repository.Save();
+                    await _repository.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -97,7 +98,7 @@ namespace BorrowedGames.Controllers
         // GET: Friends/Delete/5
         public async Task<IActionResult> Delete(long id)
         {
-            var friend = _repository.Find(id);
+            var friend = await _repository.Find(id);
             if (friend == null)
                 return NotFound();
 
@@ -109,9 +110,9 @@ namespace BorrowedGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var friend = _repository.Find(id);
+            var friend = await _repository.Find(id);
             _repository.Delete(friend);
-            _repository.Save();
+            await _repository.Save();
             return RedirectToAction(nameof(Index));
         }
 
