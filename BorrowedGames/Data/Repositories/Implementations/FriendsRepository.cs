@@ -10,6 +10,8 @@ namespace BorrowedGames.Data.Repositories.Implementations
 {
     public class FriendsRepository : IFriendsRepository
     {
+        private const string FRIEND_ALREADY_REGISTERED = "This friend is already registered";
+
         private readonly ApplicationDbContext _dbContext;
         private bool disposed;
 
@@ -20,11 +22,15 @@ namespace BorrowedGames.Data.Repositories.Implementations
 
         public void Add(Friend friend)
         {
+            if (IsDuplicate(friend))
+                throw new InvalidOperationException(FRIEND_ALREADY_REGISTERED);
             _dbContext.Friend.Add(friend);
         }
 
         public void Update(Friend friend)
         {
+            if (IsDuplicate(friend))
+                throw new InvalidOperationException(FRIEND_ALREADY_REGISTERED);
             _dbContext.Entry(friend).State = EntityState.Modified;
         }
 

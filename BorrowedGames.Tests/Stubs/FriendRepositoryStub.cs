@@ -1,5 +1,6 @@
 ﻿using BorrowedGames.Data.Repositories.Interfaces;
 using BorrowedGames.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace BorrowedGames.Tests.Stubs
 {
     public class FriendRepositoryStub : IFriendsRepository
     {
+        private const string FRIEND_ALREADY_REGISTERED = "This friend is already registered";
+
         private IList<Friend> _list;
         private long _lastId;
 
@@ -19,6 +22,9 @@ namespace BorrowedGames.Tests.Stubs
 
         public void Add(Friend friend)
         {
+            if (IsDuplicate(friend))
+                throw new InvalidOperationException(FRIEND_ALREADY_REGISTERED);
+
             _lastId++;
             friend.Id = _lastId;
             _list.Add(friend);
@@ -58,6 +64,8 @@ namespace BorrowedGames.Tests.Stubs
 
         public void Update(Friend friend)
         {
+            if (IsDuplicate(friend))
+                throw new InvalidOperationException(FRIEND_ALREADY_REGISTERED);
             Delete(Find(friend.Id).Result);
             Add(friend);
         }

@@ -47,13 +47,21 @@ namespace BorrowedGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Phone")] Friend friend)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(friend);
+
+            try
             {
                 _repository.Add(friend);
                 await _repository.Save();
                 return RedirectToAction(nameof(Index));
             }
-            return View(friend);
+            catch (System.Exception ex)
+            {
+                //TODO: Log message
+                TempData["Exception"] = ex.Message;
+                return View(friend);
+            }
         }
 
         // GET: Friends/Edit/5

@@ -11,5 +11,6 @@ namespace BorrowedGames.Data
         {
         }
         public DbSet<Friend> Friend { get; set; }
+        public DbSet<BorrowedGames.Models.Game> Game { get; set; }
     }
 }
