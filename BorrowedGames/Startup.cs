@@ -42,6 +42,7 @@ namespace BorrowedGames
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddTransient<IFriendsRepository, FriendsRepository>();
+            services.AddTransient<IGamesRepository, GamesRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

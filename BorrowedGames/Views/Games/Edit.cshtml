@@ -9,6 +9,11 @@
 
 <h4>Game</h4>
 <hr />
+@if (TempData["Exception"] != null)
+{
+    <div class="row alert alert-danger">@TempData["Exception"]</div>
+}
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">

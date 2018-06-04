@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using BorrowedGames.Models;
 using BorrowedGames.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace BorrowedGames.Controllers
 {
@@ -56,7 +57,7 @@ namespace BorrowedGames.Controllers
                 await _repository.Save();
                 return RedirectToAction(nameof(Index));
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 //TODO: Log message
                 TempData["Exception"] = ex.Message;
@@ -97,6 +98,12 @@ namespace BorrowedGames.Controllers
                         return NotFound();
                     else
                         throw;
+                }
+                catch(InvalidOperationException ex)
+                {
+                    //TODO: Log message
+                    TempData["Exception"] = ex.Message;
+                    return View(friend);
                 }
                 return RedirectToAction(nameof(Index));
             }

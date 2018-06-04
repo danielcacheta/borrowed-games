@@ -7,38 +7,33 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BorrowedGames.Data;
 using BorrowedGames.Models;
+using Microsoft.AspNetCore.Authorization;
+using BorrowedGames.Data.Repositories.Interfaces;
 
 namespace BorrowedGames.Controllers
 {
+    [Authorize]
     public class GamesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IGamesRepository _repository;
 
-        public GamesController(ApplicationDbContext context)
+        public GamesController(IGamesRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: Games
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Game.ToListAsync());
+            return View(await _repository.FindAll());
         }
 
         // GET: Games/Details/5
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(long id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var game = await _context.Game
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _repository.Find(id);
             if (game == null)
-            {
                 return NotFound();
-            }
 
             return View(game);
         }
@@ -56,28 +51,30 @@ namespace BorrowedGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Game game)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(game);
+
+            try
             {
-                _context.Add(game);
-                await _context.SaveChangesAsync();
+                _repository.Add(game);
+                await _repository.Save();
                 return RedirectToAction(nameof(Index));
             }
-            return View(game);
+            catch (Exception ex)
+            {
+                //TODO: Log message
+                TempData["Exception"] = ex.Message;
+                return View(game);
+            }
         }
 
         // GET: Games/Edit/5
-        public async Task<IActionResult> Edit(long? id)
+        public async Task<IActionResult> Edit(long id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var game = await _context.Game.FindAsync(id);
+            var game = await _repository.Find(id);
             if (game == null)
-            {
                 return NotFound();
-            }
+
             return View(game);
         }
 
@@ -89,27 +86,27 @@ namespace BorrowedGames.Controllers
         public async Task<IActionResult> Edit(long id, [Bind("Id,Name")] Game game)
         {
             if (id != game.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(game);
-                    await _context.SaveChangesAsync();
+                    _repository.Update(game);
+                    await _repository.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!GameExists(game.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    //TODO: Log message
+                    TempData["Exception"] = ex.Message;
+                    return View(game);
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -117,19 +114,11 @@ namespace BorrowedGames.Controllers
         }
 
         // GET: Games/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(long id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var game = await _context.Game
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _repository.Find(id);
             if (game == null)
-            {
                 return NotFound();
-            }
 
             return View(game);
         }
@@ -139,15 +128,15 @@ namespace BorrowedGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var game = await _context.Game.FindAsync(id);
-            _context.Game.Remove(game);
-            await _context.SaveChangesAsync();
+            var game = await _repository.Find(id);
+            _repository.Delete(game);
+            await _repository.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool GameExists(long id)
         {
-            return _context.Game.Any(e => e.Id == id);
+            return _repository.Find(id) != null;
         }
     }
 }
