@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>aspnet-BorrowedGames.Web-F1BEDEDD-5291-411E-868B-C8D28DCC844E</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BorrowedGames.App\BorrowedGames.App.csproj" />
+    <ProjectReference Include="..\BorrowedGames.Domain\BorrowedGames.Domain.csproj" />
+    <ProjectReference Include="..\BorrowedGames.Helpers\BorrowedGames.Helpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+</Project>

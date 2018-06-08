@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BorrowedGames.Domain\BorrowedGames.Domain.csproj" />
+    <ProjectReference Include="..\BorrowedGames.Helpers\BorrowedGames.Helpers.csproj" />
+  </ItemGroup>
+
+</Project>
